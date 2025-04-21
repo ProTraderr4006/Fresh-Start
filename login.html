@@ -25,4 +25,36 @@
 </script>
 
 </body>
+<script>
+  document.getElementById('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    const authDetails = new AmazonCognitoIdentity.AuthenticationDetails({
+      Username: email,
+      Password: password
+    });
+
+    const userData = {
+      Username: email,
+      Pool: userPool
+    };
+
+    const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+    cognitoUser.authenticateUser(authDetails, {
+      onSuccess: function (result) {
+        alert("Login successful!");
+        console.log("Access token: " + result.getAccessToken().getJwtToken());
+        // You can redirect the user or store the token if needed
+      },
+      onFailure: function (err) {
+        alert(err.message || JSON.stringify(err));
+      }
+    });
+  });
+</script>
+
+</body>
 </html>
