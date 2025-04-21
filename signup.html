@@ -26,4 +26,29 @@
 </script>
 
 </body>
+<script>
+  document.getElementById('signupForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    const attributeList = [
+      new AmazonCognitoIdentity.CognitoUserAttribute({
+        Name: 'email',
+        Value: email
+      })
+    ];
+
+    userPool.signUp(email, password, attributeList, null, function (err, result) {
+      if (err) {
+        alert(err.message || JSON.stringify(err));
+        return;
+      }
+      alert("Signup successful! Please check your email to verify.");
+      console.log("User name is " + result.user.getUsername());
+    });
+  });
+</script>
+<body>  
 </html>
