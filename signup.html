@@ -1,54 +1,85 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sign Up</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 300px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #007BFF;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 <body>
-  <form id="signupForm">
+  <div class="container">
     <h2>Sign Up</h2>
-    <input type="text" id="name" placeholder="Full Name" required />
-    <input type="email" id="email" placeholder="Email" required />
-    <input type="password" id="password" placeholder="Password" required />
-    <button type="submit">Sign Up</button>
-  </form>
-</body>
-</html>
-<script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.0.4/dist/amazon-cognito-identity.min.js"></script>
-<script>
-  const poolData = {
-    UserPoolId: 'ap-south-1_kui8VfQqM',
-    ClientId: '9bl5j3r5kuodgd2j6v1vl0pbk', 
-  };
-  const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-</script>
+    <form id="signup-form">
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit">Sign Up</button>
+    </form>
+    <p style="text-align:center; margin-top: 10px;">
+      Already have an account? <a href="login.html">Login here</a>
+    </p>
+  </div>
 
-</body>
-<script>
-  document.getElementById('signupForm').addEventListener('submit', function (e) {
-    e.preventDefault();
+  <!-- AWS Cognito JS -->
+  <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.0.4/dist/amazon-cognito-identity.min.js"></script>
+  <script>
+    const poolData = {
+      UserPoolId: 'YOUR_USER_POOL_ID',
+      ClientId: 'YOUR_APP_CLIENT_ID'
+    };
+    const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+    document.getElementById('signup-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
 
-    const attributeList = [
-      new AmazonCognitoIdentity.CognitoUserAttribute({
-        Name: 'email',
-        Value: email
-      })
-    ];
+      const attributeList = [
+        new AmazonCognitoIdentity.CognitoUserAttribute({ Name: 'email', Value: email })
+      ];
 
-    userPool.signUp(email, password, attributeList, null, function (err, result) {
-      if (err) {
-        alert(err.message || JSON.stringify(err));
-        return;
-      }
-      alert("Signup successful! Please check your email to verify.");
-      console.log("User name is " + result.user.getUsername());
+      userPool.signUp(email, password, attributeList, null, function(err, result) {
+        if (err) {
+          alert(err.message || JSON.stringify(err));
+          return;
+        }
+        alert("Signup successful! Please check your email to confirm your account.");
+        console.log('User name is ' + result.user.getUsername());
+      });
     });
-  });
-</script>
-<body>  
+  </script>
+</body>
 </html>
+
