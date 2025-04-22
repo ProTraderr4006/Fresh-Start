@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #eef1f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      width: 350px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    #user-email {
+      font-weight: bold;
+      color: #007BFF;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border: none;
+      background-color: #dc3545;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #c82333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Welcome 👋</h2>
+    <p>You're logged in as:</p>
+    <p id="user-email">Loading...</p>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <!-- AWS Cognito JS -->
+  <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.0.4/dist/amazon-cognito-identity.min.js"></script>
+  <script>
+    const poolData = {
+      UserPoolId: 'ap-south-1_kui8VfQqM',
+      ClientId: '9bl5j3r5kuodgd2j6v1vl0pbk'
+    };
+    const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+
+    const cognitoUser = userPool.getCurrentUser();
+
+    if (!cognitoUser) {
+      window.location.href = "login.html"; // Redirect if not logged in
+    } else {
+      cognitoUser.getSession(function(err, session) {
+        if (err || !session.isValid()) {
+          window.location.href = "login.html";
+        } else {
+          cognitoUser.getUserAttributes(function(err, attributes) {
+            if (err) {
+              alert("Error getting user details");
+            } else {
+              const emailAttr = attributes.find(attr => attr.getName() === 'email');
+              document.getElementById("user-email").textContent = emailAttr.getValue();
+            }
+          });
+        }
+      });
+    }
+
+    function logout() {
+      if (cognitoUser) {
+        cognitoUser.signOut();
+      }
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>
